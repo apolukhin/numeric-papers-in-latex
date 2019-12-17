@@ -1,0 +1,259 @@
+%% main file for the C++ standard.
+%%
+
+%%--------------------------------------------------
+%% basics
+\documentclass[ebook,10pt,oneside,openany,final]{memoir}
+
+\newcommand{\docno}{P0539R5}
+\newcommand{\prevdocno}{P0539R4}
+\newcommand{\reldate}{\today}
+
+\usepackage[american]
+           {babel}        % needed for iso dates
+\usepackage[iso,american]
+           {isodate}      % use iso format for dates
+\usepackage[final]
+           {listings}     % code listings
+\usepackage{longtable}    % auto-breaking tables
+\usepackage{ltcaption}    % fix captions for long tables
+\usepackage{booktabs}     % fancy tables
+\usepackage{relsize}      % provide relative font size changes
+\usepackage{underscore}   % remove special status of '_' in ordinary text
+\usepackage{verbatim}     % improved verbatim environment
+\usepackage{parskip}      % handle non-indented paragraphs "properly"
+\usepackage{array}        % new column definitions for tables
+\usepackage[normalem]{ulem}
+\usepackage{color}        % define colors for strikeouts and underlines
+\usepackage{amsmath}      % additional math symbols
+\usepackage{mathrsfs}     % mathscr font
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{xspace}
+\usepackage{fixme}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[pdftex, final]{graphicx}
+\usepackage[pdftex,
+            pdftitle={A Proposal to add wide_int Template Class},
+            pdfsubject={A Proposal to add wide_int Template Class},
+            pdfcreator={Antony Polukhin},
+            bookmarks=true,
+            bookmarksnumbered=true,
+            pdfpagelabels=true,
+            pdfpagemode=UseOutlines,
+            pdfstartview=FitH,
+            linktocpage=true,
+            colorlinks=true,
+            linkcolor=blue,
+            plainpages=false
+           ]{hyperref}
+\usepackage{memhfixc}     % fix interactions between hyperref and memoir
+\usepackage{xstring}
+
+\input{layout}
+\input{styles}
+\input{macros}
+\input{tables}
+
+
+%%--------------------------------------------------
+%% fix interaction between hyperref and other
+%% commands
+\pdfstringdefDisableCommands{\def\smaller#1{#1}}
+\pdfstringdefDisableCommands{\def\textbf#1{#1}}
+\pdfstringdefDisableCommands{\def\raisebox#1{}}
+\pdfstringdefDisableCommands{\def\hspace#1{}}
+
+%%--------------------------------------------------
+%% add special hyphenation rules
+\hyphenation{tem-plate ex-am-ple in-put-it-er-a-tor name-space name-spaces}
+
+%%--------------------------------------------------
+%% turn off all ligatures inside \texttt
+\DisableLigatures{encoding = T1, family = tt*}
+
+%%--------------------------------------------------
+%% make overfull hboxes visible
+%\setlength\overfullrule{5pt}
+
+\begin{document}
+\chapterstyle{cppstd}
+\pagestyle{cpppage}
+
+%%--------------------------------------------------
+%% configuration
+
+%% Title
+\newcommand{\doctitle}{A Proposal to add wide_int Template Class}
+
+
+
+%%--------------------------------------------------
+%% front matter
+\frontmatter
+
+\begingroup
+\def\hd{\begin{tabular}{ll}
+          \textbf{Document Number:} & {\larger\docno}             \\
+          \textbf{Date:}            & \reldate                    \\
+          \textbf{Audience:}        & SG6, LEWGI, LEWG            \\
+          \textbf{Revises:}         & \prevdocno                  \\
+          \textbf{Reply to:}        & Igor Klevanets              \\
+                                    & cerevra@yandex.ru, cerevra@yandex-team.ru \\
+                                    & Antony Polukhin \\
+                                    & antoshkka@gmail.com, antoshkka@gmail.com \\
+          \end{tabular}
+}
+\newlength{\hdwidth}
+\settowidth{\hdwidth}{\hd}
+\hfill\begin{minipage}{\hdwidth}\hd\end{minipage}
+\endgroup
+
+\vspace{2.5cm}
+\begin{center}
+\textbf{\Large\doctitle}
+\end{center}
+
+%%--------------------------------------------------
+%%--------------------------------------------------
+%%--------------------------------------------------
+
+
+
+\section{I. Introduction and Motivation}
+
+Current standard provides signed and unsigned \tcode{int8_t}, \tcode{int16_t}, \tcode{int32_t}, \tcode{int64_t}. It is usually enough for every day tasks, but sometimes appears a need in big numbers: for cryptography, IPv6, very big counters etc. Non-standard type \tcode{__int128} which is provided by GCC and Clang illuminates this need. But there is no cross-platform solution and no way to satisfy future needs in even more big numbers.
+
+This is an attempt to solve the problem in a generic way on a library level and provide wording for \href{https://wg21.link/P0104R0}{P0104R0: Multi-Word Integer Operations and Types}.
+
+A proof of concept implementation available at: \href{https://github.com/cerevra/int/tree/master/v3}{https://github.com/cerevra/int/tree/master/v3}. 
+
+
+
+\section{II. Changelog}
+
+Differences with \href{https://wg21.link/P0539R4}{P0539R4}:
+\begin{itemize}
+\item Sync with P1889R1:
+    \begin{itemize}
+    \item Use \LaTeX{} for wording and paper
+    \item Use spaceship operator
+    \end{itemize}
+\end{itemize}
+
+Differences with \href{https://wg21.link/P0539R3}{P0539R3}:
+\begin{itemize}
+\item More paragraphs in "III. Design and paper limitations"
+\item Added requirements on \tcode{wide_integer} alignment and layout
+\item Dropped the \tcode{explicit} from \tcode{operator bool()}
+\item Permitted implementations to add overloads (mostly for adding explicit overloads that do not generate warnings)
+\end{itemize}
+
+Differences with \href{https://wg21.link/P0539R2}{P0539R2}:
+\begin{itemize}
+\item \textbf{"Bits" won in the discussion "Words vs Bytes vs Bits" in Albuquerque}
+\item Changed "MachineWords" to "Bits"
+\item Interoperability with other types moved to a separate paper
+\item Removed signedness scoped enum
+\end{itemize}
+
+Differences with \href{https://wg21.link/P0539R1}{P0539R1}:
+\begin{itemize}
+\item Added a discussion on "Words vs Bytes vs Bits"
+\end{itemize}
+
+Differences with \href{https://wg21.link/P0539R0}{P0539R0}:
+\begin{itemize}
+\item Reworked the proposal for simpler integration with other Numerics proposals:
+    \begin{itemize}
+       \item Added an interoperability section [numeric.interop]
+       \item Arithmetic and Integral concepts were moved to [numeric.requirements] as they seem widely useful
+       \item Binary non-member operations that accept Arithmetic or Integral parameter were changed to accept two Arithmetic or Integral parameters respectively and moved to [numeric.interop]
+       \item \tcode{int128_t} and other aliases now depend on \href{https://wg21.link/P0102R0}{P0102R0}
+    \end{itemize}
+\item Renamed wide_int to \tcode{wide_integer}
+\item \tcode{wide_integer} now uses machine words count as a template parameter, not bits count
+\item Removed not allowed type traits specializations
+\item Added \tcode{to_chars} and \tcode{from_chars}
+\end{itemize}
+
+
+
+\section{III. Design and paper limitations}
+\tcode{wide_integer} is designed to be as close as possible to built-in integral types:
+\begin{itemize}
+\item it does not allocate memory
+\item it is a standard layout type
+\item it is trivially copyable
+\item it is trivially desctructible
+\item it is constexpr usable
+\end{itemize}
+
+\tcode{wide_integer} is \textbf{not} a metafunction. Such metafunctions are discussed in \href{https://wg21.link/P0102}{P0102}.
+
+\tcode{wide_integer} does \textbf{not} add \tcode{noexcept} to operations that have UB for built-in types. Operations that have UB traditionally are not marked with \tcode{noexcept} by LWG. Attempt to change that behavior may be done in separate paper.
+
+In this proposal we concentrate on the \tcode{wide_integer} class that uses machine words under the cover. Such implementations allow you to get best performance and leave behind some design questions, like "Is \tcode{(sizeof(wide_integer<X>) == X / CHAR_BIT)} or not?".
+
+However, we do not wish to shut the door close for extending the abilities of the \tcode{wide_integer} class. Some users may wish to see \tcode{unit40_t}, or \tcode{unit48_t}.
+
+We insist on \textbf{interface that allows specifying integers not representable by machine words count}. Such extensions of functionality may be discussed in separate papers.
+
+\textbf{\tcode{wide_integer} mimics the behavior of \tcode{int}}. Because of that \tcode{wide_int<128> * wide_int<128>} results in \tcode{wide_int<128>}, not \tcode{wide_int<256>}. There are separate proposals for integers that are elastic (\href{https://wg21.link/P0828}{P0828}) or safe (\href{https://wg21.link/P0228R0}{P0228R0}).
+
+Non template aliases for integers of particular width (for example \tcode{int128_t}) are handled in separate paper P0102R0. There was an implicit request from LEWG to remove those aliases from this paper, as they were rising a lot of questions on some platforms.
+
+Interoperability with other arithmetic types was moved to a separate paper \href{https://wg21.link/P0880}{P0880}.
+
+We double checked that constexpr on default constructor does not require zero initialization in non constexpr contexts and still allows zero initialization if explicitly asked:
+\begin{codeblock}
+int main() {
+     //constexpr wide_integer<128, unsigned> wi;   // Not initialized in constexpr context - compile time error
+     wide_integer<128, unsigned> wi_no_init;       // Not initialized - OK
+     constexpr wide_integer<128, unsigned> wi{};   // Zero initialized - OK
+}
+\end{codeblock}
+
+Current revision of the paper mimics behavior of int even in cases that are considered dangerous. It is possible to make \tcode{wide_integer} type more safe by making explicit:
+\begin{itemize}
+\item Conversion from any signed to any unsigned type.
+\item Narrowing conversions.
+\item Conversion to and from floating point types.
+\item Conversion to \tcode{bool}.
+\end{itemize}
+
+Such change will break the compatibility of \tcode{wide_integer} and \tcode{int}. Consider the case, when you have some template function \tcode{foo(Arithmetic a)} that works with arithmetic types. Function is huge and it was developed a long time ago. If interface of \tcode{wide_integer} is same as the interface of int then \tcode{foo()} could work with it. But if we make some of the conversions explicit, then \tcode{foo()} function must be adjusted.
+
+Also note that adding explicit would affect only \tcode{wide_integer}s, while there could be a better solution for all the integral types. For example all the integrals could be fixed by some \tcode{safe_integer<Integral>} class, that is very explicit and does additional checks on demand. In that case adding restrictions into \tcode{wide_integer} would just break the interface compatibility with \tcode{int} without big benefit.
+
+
+\section{IV. Acknowledgements}
+
+Many thanks to Alex Strelnikov and John McFarlane for sharing useful ideas and thoughts.
+
+
+
+\section{V. Feature-testing macro}
+
+For the purposes of SG10 we recommend the feature-testing macro name \tcode{__cpp_lib_wide_integer}.
+
+
+
+\section{VI. Proposed wording}
+
+%%--------------------------------------------------
+%%--------------------------------------------------
+%%--------------------------------------------------
+
+%%--------------------------------------------------
+%% Wording
+
+\mainmatter
+\setglobalstyles
+\include{wideinteger}
+
+
+%%--------------------------------------------------
+%% End of document
+\end{document}

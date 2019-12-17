@@ -14,6 +14,7 @@
 FIGURES = $(patsubst %.dot,%.pdf,$(wildcard *.dot))
 
 TSPDF = pdflatex ts | grep -v "^Overfull"
+WIDEINTPDF = pdflatex wide_int_freestanding | grep -v "^Overfull"
 
 default: rebuild
 
@@ -42,5 +43,10 @@ reindex:
 	makeindex impldefindex
 	$(TSPDF)
 	$(TSPDF)
+
+wide_int:
+	$(WIDEINTPDF)
+	$(WIDEINTPDF)
+	$(WIDEINTPDF)
 
 ### Makefile ends here
